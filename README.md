@@ -22,7 +22,7 @@ GND ----/\/\/\----'
 * 3 fonts are available:
     * fonts/zx81.h is the original font and character coding.
     * fonts/zx81_ascii.h is based on the original, but extended to ascii, and uppercase symbols made bold. Check fonts/zx81_ascii_font.png, where red pixel are used to mark differences.
-    * fonts/ascii.h is borrowed from [dhepper](/dhepper/font8x8/blob/master/font8x8_basic.h).
+    * fonts/ascii.h is borrowed from [dhepper](https://github.com/dhepper/font8x8/blob/master/font8x8_basic.h).
 * A VRAM array holds 24 rows, 32 columns of data, character codes as defined by the selected font.
 * VRAM0/VRAM1 are a double buffer for pixel data, one line each. Extra bytes at the end are used for padding and ensuring 0-filled blanking interval.
 * On HSYNC interrupt (Timer1 CH1) code the SPI DMA is prepared for the current pixel buffer, then the next buffer is filled.
