@@ -293,7 +293,7 @@ int main()
 	}
 
 	sprintf(VRAM, "Lucas Vinicius Hartmann  ");
-	v81_mandelbrot(VRAM);
+	// v81_mandelbrot(VRAM);
 
 	int i=0;
 	while(1) {
@@ -308,6 +308,7 @@ void VRAM_scroll() {
 	memset(VRAM + sizeof(VRAM) - 32,  ' ', 32);
 }
 
+#if !FUNCONF_USE_DEBUGPRINTF
 int putchar(int c) {
 	static int pos = 0;
 
@@ -347,3 +348,4 @@ int _write(int fd, const char *buf, int size) {
 	while (size--) putchar(*buf++);
 	return 0;
 }
+#endif // !FUNCONF_USE_DEBUGPRINTF
