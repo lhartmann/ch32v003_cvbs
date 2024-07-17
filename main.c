@@ -62,8 +62,7 @@ void on_scanline(cvbs_context_t *ctx, cvbs_scanline_t *scanline) {
 		const uint8_t *src  = VRAM + ctx->line/8*32;
 
 		for (int i=0; i<32; i++) {
-			img[i] = ctx->line;
-//			img[i]= font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); // Negateable, loopy: ~1040 cycles
+			img[i]= font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); // Negateable, loopy: ~1040 cycles
 		}
 		img[32] = 0;
 
