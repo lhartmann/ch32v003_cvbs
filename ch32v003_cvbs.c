@@ -2,34 +2,6 @@
 #include "ch32v003fun.h"
 #include <string.h>
 
-typedef struct cvbs_pulse_s {
-    unsigned half_period : 1;
-    unsigned short_sync  : 1;
-    unsigned long_sync   : 1;
-    unsigned active      : 1;
-    unsigned duration    : 8; // index based on pulses
-} cvbs_pulse_t;
-
-struct cvbs_pulse_properties_s {
-    uint16_t horizontal_period;
-    uint16_t sync_short;
-    uint16_t sync_normal;
-    uint16_t sync_long;
-    uint16_t dma_start;
-    cvbs_pulse_t pulse_sequence[];
-};
-
-struct cvbs_context_s {
-    uint8_t pulse_index;
-    uint8_t pulse_counter;
-    cvbs_pulse_t current_pulse;
-    int line;
-
-    const cvbs_pulse_properties_t *pulse_properties;
-    void (*on_vblank)(cvbs_context_t *ctx, int line);
-    void (*on_line)(cvbs_context_t *ctx, int line);
-};
-
 // Hardware requirements:
 //   HCLK must be 48MHz.
 //   Timer1 runs at HCLK, 48MHz;
@@ -77,32 +49,4 @@ static const cvbs_pulse_properties_t *cvbs_pulse_properties[] = {
 void cvbs_context_init(cvbs_context_t *ctx, cvbs_standard_t cvbs_standard) {
     memset(ctx, 0, sizeof(cvbs_context_t));
     ctx->pulse_properties = cvbs_pulse_properties[cvbs_standard];
-}
-
-void cvbs_step(cvbs_context_t *ctx) {
-    if (--ctx->pulse_counter)
-        return;
-
-    ctx->current_pulse = ctx->pulse_properties->pulse_sequence[++ctx->pulse_index];
-
-    if (!ctx->current_pulse.duration) {
-        ctx->pulse_index = 0;
-        ctx->current_pulse = ctx->pulse_properties->pulse_sequence[0];
-    }
-
-    ctx->pulse_counter = ctx->current_pulse.duration;
-}
-
-uint16_t cvbs_horizontal_period(cvbs_context_t *ctx) {
-    return ctx->pulse_properties->horizontal_period >> ctx->current_pulse.half_period;
-}
-
-uint16_t cvbs_sync(cvbs_context_t *ctx) {
-    if (ctx->current_pulse.short_sync)
-        return ctx->pulse_properties->sync_short;
-
-    if (ctx->current_pulse.long_sync)
-        return ctx->pulse_properties->sync_long;
-
-    return ctx->pulse_properties->sync_normal;
 }
