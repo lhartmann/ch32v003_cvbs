@@ -89,8 +89,11 @@ void TIM1_UP_IRQHandler() {
 
 	// Based on the current line
 	if (cvbs_is_active_line(&cvbs_context)) {
+		static uint32_t data_length;
+		data_length = scanline.data_length;
+
 		DMA1_Channel3->MADDR = (uint32_t)scanline.data;
-		DMA1_Channel6->MADDR = (uint32_t)&scanline.data_length;
+		DMA1_Channel6->MADDR = (uint32_t)&data_length;
 
 		// Enable DMA trigger
 		TIM1->DMAINTENR |= TIM_CC3DE;
