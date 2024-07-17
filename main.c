@@ -65,10 +65,10 @@ void on_scanline(cvbs_context_t *ctx, cvbs_scanline_t *scanline) {
 			img[i] = ctx->line;
 //			img[i]= font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); // Negateable, loopy: ~1040 cycles
 		}
+		img[32] = 0;
 
 		cvbs_pulse_properties_t *pp = ctx->pulse_properties;
-		scanline->horizontal_start =
-			pp->horizontal_period - pp->sync_normal - 256*48/6/2;
+		scanline->horizontal_start = 4e-6*48e6 + pp->sync_normal;
 		scanline->data_length = 33;
 		scanline->data = img;
 	}
