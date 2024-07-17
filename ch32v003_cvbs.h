@@ -26,7 +26,6 @@ struct cvbs_pulse_properties_s {
     uint16_t sync_short;
     uint16_t sync_normal;
     uint16_t sync_long;
-    uint16_t dma_start;
     cvbs_pulse_t pulse_sequence[];
 };
 

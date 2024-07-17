@@ -15,11 +15,10 @@
 
 static const cvbs_pulse_properties_t PAL_pulse_properties = {
     // PAL 50Hz, 64us per scanline
-    .horizontal_period = 3072, // 48MHz * 64us
-    .sync_short        = 113,  // 48MHz * 2.35us
-    .sync_normal       = 226,  // 48MHz * 4.7us
-    .sync_long         = 1310, // 48MHz * (64us/2 - 4.7us)
-    .dma_start         = 750,  // TBD
+    .horizontal_period = 3072/2, // 48MHz * 64us
+    .sync_short        = 113 /2, // 48MHz * 2.35us
+    .sync_normal       = 226 /2, // 48MHz * 4.7us
+    .sync_long         = 1310/2, // 48MHz * (64us/2 - 4.7us)
 
     // 625 lines = 640 pulses = 30 halfs + 610 periods
     .pulse_sequence = {

@@ -47,7 +47,8 @@ void spi_init( void )
 	SPI1->CTLR1 = 
 		SPI_NSS_Soft | SPI_CPHA_1Edge | SPI_CPOL_Low | SPI_DataSize_8b |
 		SPI_Mode_Master | SPI_Direction_1Line_Tx |
-		SPI_BaudRatePrescaler_8;
+		SPI_BaudRatePrescaler_4;
+//		SPI_BaudRatePrescaler_8;
 
 	// enable SPI port
 	SPI1->CTLR1 |= SPI_CTLR1_SPE;
@@ -66,8 +67,9 @@ void on_scanline(cvbs_context_t *ctx, cvbs_scanline_t *scanline) {
 		}
 		img[32] = 0;
 
-		cvbs_pulse_properties_t *pp = ctx->pulse_properties;
-		scanline->horizontal_start = 4e-6*48e6 + pp->sync_normal;
+		const cvbs_pulse_properties_t *pp = ctx->pulse_properties;
+		scanline->horizontal_start = 4e-6*24e6 + pp->sync_normal;
+//		scanline->horizontal_start = 4e-6*48e6 + pp->sync_normal;
 		scanline->data_length = 33;
 		scanline->data = img;
 	}
@@ -75,10 +77,11 @@ void on_scanline(cvbs_context_t *ctx, cvbs_scanline_t *scanline) {
 
 // Timer Init
 void TIM1_UP_IRQHandler( void ) __attribute__((interrupt));
-int32_t TIM1_UP_IRQHandler_duration;
+int32_t TIM1_UP_IRQHandler_active_duration;
+int32_t TIM1_UP_IRQHandler_blank_duration;
 void TIM1_UP_IRQHandler() {
 	// Profiling interrupt duration
-	TIM1_UP_IRQHandler_duration = SysTick->CNT;
+	int32_t start_of_interrupt = SysTick->CNT;
 
 	//
 	TIM1->INTFR &= ~TIM_UIF;
@@ -112,8 +115,13 @@ void TIM1_UP_IRQHandler() {
 	TIM1->CH3CVR = scanline.horizontal_start + ctx->pulse_properties->sync_normal;
 
 	// Profiling interrupt duration
-	TIM1_UP_IRQHandler_duration = SysTick->CNT - TIM1_UP_IRQHandler_duration;
-	if (TIM1_UP_IRQHandler_duration < 0) TIM1_UP_IRQHandler_duration += SysTick->CMP+1;
+	start_of_interrupt = SysTick->CNT - start_of_interrupt;
+	if (start_of_interrupt < 0) start_of_interrupt += SysTick->CMP+1;
+
+	if (cvbs_is_active_line(ctx))
+		TIM1_UP_IRQHandler_active_duration = start_of_interrupt;
+	else
+		TIM1_UP_IRQHandler_blank_duration = start_of_interrupt;
 }
 
 void timer_init() {
@@ -175,6 +183,48 @@ void dma_init() {
 		DMA_CFGR1_EN;
 }
 
+void switch_to_hse_pll() {
+	RCC->CTLR  =
+		(0<<25) | // PLLRDY
+		(1<<24) | // PLLON
+		(0<<19) | // CSSON
+		(0<<18) | // Bypass HSE oscilator, use external clock
+		(0<<17) | // HSE ready
+		(1<<16) | // HSEON
+		(0<< 8) | // HSI Calibration (8bit)
+		(0<< 3) | // HSI Trim (5bit)
+		(0<< 1) | // HSI Ready
+		(1<< 0) ; // HSI On
+	RCC->CFGR0 =
+		(0<<24) | // MCO select: 0..3=OFF, 4=SYSCLK, 5=HSI, 6=HSE, 7=PLL
+		(1<<16) | // PLLSRC: 0=HSI, 1=HSE
+		(0<<11) | // ADC prescale HBCLK by (complicated, 5bit)
+		(0<< 4) | // HBCLK prscale SYSCLK by: 0-7=k+1, 8-15:2**(k-7)
+		(0<< 2) | // SYSCLK status: 0=HSI, 1=HSE, 2=PLL.
+		(0<< 0) ; // SYSCLK Source: 0=HSI, 1=HSE, 2=PLL.
+
+	while (~RCC->CTLR & (1<<25));
+
+	RCC->CFGR0 =
+		(0<<24) | // MCO select: 0..3=OFF, 4=SYSCLK, 5=HSI, 6=HSE, 7=PLL
+		(1<<16) | // PLLSRC: 0=HSI, 1=HSE
+		(0<<11) | // ADC prescale HBCLK by (complicated, 5bit)
+		(0<< 4) | // HBCLK prscale SYSCLK by: 0-7=k+1, 8-15:2**(k-7)
+		(0<< 2) | // SYSCLK status: 0=HSI, 1=HSE, 2=PLL.
+		(1<< 0) ; // SYSCLK Source: 0=HSI, 1=HSE, 2=PLL.
+	RCC->CTLR  =
+		(0<<25) | // PLLRDY
+		(1<<24) | // PLLON
+		(0<<19) | // CSSON
+		(0<<18) | // Bypass HSE oscilator, use external clock
+		(0<<17) | // HSE ready
+		(1<<16) | // HSEON
+		(0<< 8) | // HSI Calibration (8bit)
+		(0<< 3) | // HSI Trim (5bit)
+		(0<< 1) | // HSI Ready
+		(0<< 0) ; // HSI On
+}
+
 /*
  * entry
  */
@@ -183,6 +233,7 @@ int main()
 	memset(VRAM0, 0xE7, sizeof(VRAM0));
 	memset(VRAM1, 0x81, sizeof(VRAM1));
 	SystemInit();
+	switch_to_hse_pll();
 	spi_init();
 	timer_init();
 	dma_init();
@@ -192,23 +243,27 @@ int main()
 
 	for (int i=32; i<sizeof(VRAM); i++) {
 //		VRAM[i] = i%64 + (i&0x40 ? 0x80 : 0);
-		VRAM[i] = 0;
+		VRAM[i] = 0x80;
 	}
 
-	sprintf((char*)VRAM, "Lucas Vinicius Hartmann  ");
-	// v81_mandelbrot(VRAM);
+	printf("Lucas Vinicius Hartmann \n");
+//	v81_mandelbrot(VRAM);
 
 	int i=0;
 	while(1) {
 		Delay_Ms( 1000 );
-		printf("%d\n", i++);
-//		printf("TIM1_UP_IRQHandler_duration = %ld\n", TIM1_UP_IRQHandler_duration);
+		printf("%d, AD=%ld, BD=%ld, T=%d.\n",
+			i++,
+			TIM1_UP_IRQHandler_active_duration,
+			TIM1_UP_IRQHandler_blank_duration,
+			cvbs_horizontal_period(&cvbs_context)
+		);
 	}
 }
 
 void VRAM_scroll() {
 	memmove(VRAM, VRAM+32, sizeof(VRAM)-32);
-	memset(VRAM + sizeof(VRAM) - 32,  ' ', 32);
+	memset(VRAM + sizeof(VRAM) - 32, ' ', 32);
 }
 
 #if !FUNCONF_USE_DEBUGPRINTF
