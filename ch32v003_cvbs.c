@@ -41,8 +41,37 @@ static const cvbs_pulse_properties_t PAL_pulse_properties = {
     }
 };
 
+static const cvbs_pulse_properties_t ZX81_PAL_pulse_properties = {
+    // PAL 50Hz, 64us per scanline
+    .horizontal_period = 3072/2, // 48MHz * 64us
+    .sync_short        = 113 /2, // 48MHz * 2.35us
+    .sync_normal       = 226 /2, // 48MHz * 4.7us
+    .sync_long         = 1310/2, // 48MHz * (64us/2 - 4.7us)
+
+    // 625 lines = 640 pulses = 30 halfs + 610 periods
+    .pulse_sequence = {
+    //   H  S  L  A    N
+        {1, 0, 1, 0,   5}, // Sync long/2
+        {1, 1, 0, 0,   5}, // Sync short/2
+        {0, 0, 0, 0,  46+19}, // Top blank
+        {0, 0, 0, 1, 230-19-19}, // Active
+        {0, 0, 0, 0,  29+19}, // Bottom blank
+        {1, 1, 0, 0,   5}, // Sync short/2
+        {1, 0, 1, 0,   5}, // Sync long/2
+        {1, 1, 0, 0,   4}, // Sync short/2
+        {0, 1, 0, 0,   1}, // Sync short
+        {0, 0, 0, 0,  46+19}, // Top blank
+        {0, 0, 0, 1, 230-19-19}, // Active
+        {0, 0, 0, 0,  28+19}, // Bottom blank
+        {1, 0, 0, 0,   1}, // Bottom blank/2
+        {1, 1, 0, 0,   5}, // Sync short/2
+        {0, 0, 0, 0,   0}, // END
+    }
+};
+
 static const cvbs_pulse_properties_t *cvbs_pulse_properties[] = {
     [CVBS_STD_PAL] = &PAL_pulse_properties,
+    [CVBS_STD_ZX81_PAL] = &ZX81_PAL_pulse_properties,
 };
 
 void cvbs_context_init(cvbs_context_t *ctx, cvbs_standard_t cvbs_standard) {
