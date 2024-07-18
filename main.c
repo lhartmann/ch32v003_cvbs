@@ -111,8 +111,7 @@ void on_scanline(cvbs_context_t *ctx, cvbs_scanline_t *scanline) {
 		img[32] = 0;
 
 		const cvbs_pulse_properties_t *pp = ctx->pulse_properties;
-		scanline->horizontal_start = 5.7e-6*24e6 + pp->sync_normal;
-//		scanline->horizontal_start = 4e-6*48e6 + pp->sync_normal;
+		scanline->horizontal_start = (int)(5.7e-6*24e6) + pp->sync_normal;
 		scanline->data_length = 33;
 		scanline->data = img;
 	}
