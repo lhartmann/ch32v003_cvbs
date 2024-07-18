@@ -1,6 +1,6 @@
 /*
- * Example for SPI with circular DMA for audio output
- * 04-10-2023 E. Brombaugh
+ * CH32V003 CVBS output test.
+ * 2024-07-17 Lucas V. Hartmann
  */
 
 #include "ch32v003fun.h"
