@@ -62,9 +62,52 @@ void on_scanline(cvbs_context_t *ctx, cvbs_scanline_t *scanline) {
 		const uint8_t *font = active_font+1 + ((ctx->line%8) << *active_font);/////// ASCII
 		const uint8_t *src  = VRAM + ctx->line/8*32;
 
+		#if 1 // Loopy code, ISR takes ~1423 cycles.
 		for (int i=0; i<32; i++) {
-			img[i]= font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); // Negateable, loopy: ~1040 cycles
+			img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0);
 		}
+		#elif 0 // Partially unrolled, ISR takes ~1090 cycles, costs +88 .text bytes.
+		for (int i=0; i<32; i+=4) {
+			img[i+0] = font[src[i+0] & 0x7F] ^ (src[i+0]&0x80 ? 0xFF : 0);
+			img[i+1] = font[src[i+1] & 0x7F] ^ (src[i+1]&0x80 ? 0xFF : 0);
+			img[i+2] = font[src[i+2] & 0x7F] ^ (src[i+2]&0x80 ? 0xFF : 0);
+			img[i+3] = font[src[i+3] & 0x7F] ^ (src[i+3]&0x80 ? 0xFF : 0);
+		}
+		#else // Fully unrolled, ISR takes ~1009 cycles, costs +792 .text bytes.
+		int i=0;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		img[i] = font[src[i] & 0x7F] ^ (src[i]&0x80 ? 0xFF : 0); i++;
+		#endif
 		img[32] = 0;
 
 		const cvbs_pulse_properties_t *pp = ctx->pulse_properties;
