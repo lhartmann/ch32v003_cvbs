@@ -12,7 +12,6 @@
 //   SPI DMA does 33 transfers to SPI TX buffer.
 
 // https://www.batsocks.co.uk/readme/video_timing.htm
-
 static const cvbs_pulse_properties_t PAL_pulse_properties = {
     // PAL 50Hz, 64us per scanline
     .horizontal_period = 3072/2, // 48MHz * 64us
@@ -41,6 +40,8 @@ static const cvbs_pulse_properties_t PAL_pulse_properties = {
     }
 };
 
+// Based on the url, progressive scan, then vertically centered.
+// https://www.batsocks.co.uk/readme/video_timing.htm
 static const cvbs_pulse_properties_t ZX81_PAL_pulse_properties = {
     // PAL 50Hz, 64us per scanline
     .horizontal_period = 3072/2, // 48MHz * 64us
@@ -53,18 +54,10 @@ static const cvbs_pulse_properties_t ZX81_PAL_pulse_properties = {
     //   H  S  L  A    N
         {1, 0, 1, 0,   5}, // Sync long/2
         {1, 1, 0, 0,   5}, // Sync short/2
-        {0, 0, 0, 0,  46+19}, // Top blank
-        {0, 0, 0, 1, 230-19-19}, // Active
-        {0, 0, 0, 0,  29+19}, // Bottom blank
-        {1, 1, 0, 0,   5}, // Sync short/2
-        {1, 0, 1, 0,   5}, // Sync long/2
-        {1, 1, 0, 0,   4}, // Sync short/2
-        {0, 1, 0, 0,   1}, // Sync short
-        {0, 0, 0, 0,  46+19}, // Top blank
-        {0, 0, 0, 1, 230-19-19}, // Active
-        {0, 0, 0, 0,  28+19}, // Bottom blank
-        {1, 0, 0, 0,   1}, // Bottom blank/2
-        {1, 1, 0, 0,   5}, // Sync short/2
+        {0, 0, 0, 0,  65}, // Top blank
+        {0, 0, 0, 1, 192}, // Active
+        {0, 0, 0, 0,  47}, // Bottom blank
+        {1, 1, 0, 0,   6}, // Sync short/2
         {0, 0, 0, 0,   0}, // END
     }
 };
