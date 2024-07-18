@@ -28,7 +28,13 @@ GND ----/\/\/\----'
 * A VRAM array holds 24 rows, 32 columns of data, character codes as defined by the selected font.
 * VRAM0/VRAM1 are a double buffer for pixel data, one line each. Extra bytes at the end are used for padding and ensuring 0-filled blanking interval.
 * On HSYNC interrupt (Timer1 CH1) code the SPI DMA is prepared for the current pixel buffer, then the next buffer is filled.
-* The `ch32v003_cvbs.*` files are not yet in use, they are supposed to be next-step. All relevant logic is still in `main.c`.
+* The `ch32v003_cvbs.*` files are supposed to implement most of the scanning logic, and defer specifics to on_scanline and on_vblank callbacks. Implementation is partial, with most initializations still in `main.c`.
+* `ch32v003fun` is included as a submodule so:
+    * `git clone --recursive` this repo, or
+    * `git submodule update --init --recursive` after cloning.
+* Fonts are not built automatically. Run `make -C fonts` before continuing.
+* Not all depeendencies are properly set, always use `make clean all` to build.
+
 
 License: MIT
 
