@@ -49,7 +49,6 @@ P.S.: Horizontal stretch should be possible by changing the SPI clock on the fly
 * `ch32v003fun` is included as a submodule so:
     * `git clone --recursive` this repo, or
     * `git submodule update --init --recursive` after cloning.
-* Fonts are not built automatically. Run `make -C fonts` before continuing.
 * Not all depeendencies are properly set, always use `make clean all` to build.
 
 
