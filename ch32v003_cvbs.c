@@ -11,6 +11,7 @@
 //   SPI runs at pixel clock, 6MHz.
 //   SPI DMA does 33 transfers to SPI TX buffer.
 
+// Based on the url, interleaved, modified to 480i lines.
 // https://www.batsocks.co.uk/readme/video_timing.htm
 static const cvbs_pulse_properties_t PAL_pulse_properties = {
     // PAL 50Hz, 64us per scanline
@@ -24,16 +25,16 @@ static const cvbs_pulse_properties_t PAL_pulse_properties = {
     //   H  S  L  A    N
         {1, 0, 1, 0,   5}, // Sync long/2
         {1, 1, 0, 0,   5}, // Sync short/2
-        {0, 0, 0, 0,  46}, // Top blank
-        {0, 0, 0, 1, 230}, // Active
-        {0, 0, 0, 0,  29}, // Bottom blank
+        {0, 0, 0, 0,  46-5}, // Top blank
+        {0, 0, 0, 1, 230+10}, // Active
+        {0, 0, 0, 0,  29-5}, // Bottom blank
         {1, 1, 0, 0,   5}, // Sync short/2
         {1, 0, 1, 0,   5}, // Sync long/2
         {1, 1, 0, 0,   4}, // Sync short/2
         {0, 1, 0, 0,   1}, // Sync short
-        {0, 0, 0, 0,  46}, // Top blank
-        {0, 0, 0, 1, 230}, // Active
-        {0, 0, 0, 0,  28}, // Bottom blank
+        {0, 0, 0, 0,  46-5}, // Top blank
+        {0, 0, 0, 1, 230+10}, // Active
+        {0, 0, 0, 0,  28-5}, // Bottom blank
         {1, 0, 0, 0,   1}, // Bottom blank/2
         {1, 1, 0, 0,   5}, // Sync short/2
         {0, 0, 0, 0,   0}, // END
