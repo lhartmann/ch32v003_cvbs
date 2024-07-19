@@ -21,10 +21,12 @@ For use in text mode, just do `printf(...)` on `main()`, or directly modify the 
 
 # Demo-Scene Style Usage
 
-If you want to show off then you probably want to modify `on_scanline(...)`. This function is called once per active display line, and should fill the `cvbs_scanline_t` structure as needed. Beware it runs on interrupt context, so it must be fast and handle potential conflicts with foreground code. So far, the `cvbs_scanline_t` structure has only 3 fields:
+If you want to show off then you probably want to modify `on_scanline(...)`. This function is called once per active display line, and should fill the `cvbs_scanline_t` structure as needed. So far, the structure has only 3 fields:
 * `data` must point to an array of pixel data, bytes, MSB is left-most. LSB of last byte must be zero to keep horizontal blank (byte must be even, or simply zero).
 * `data_length` is kind of self-explanatory.
 * `horizontal_start` controls when to start outputting pixels. It is a count of SYSCLK cycles from the falling edge of horizontal sync.
+
+Beware that `on_scanline(...)` runs on interrupt context, and simultaneous to SPI DMA. This means that the code should be fast, and handle potential race-conditons with foreground code on `main()`. Additionally, the pixel `data` array of the previous scanline is still in use for the DMA and must be preserved, potentially requiring double-buffering.
 
 Effects such as smooth horizontal scrolling, italic text, perspective graphics, or wobbly images can be achieved by setting `horizontal_start` approprieately. Smooth vertical scrolling or stretching can be achieved by setting `data` with some line offset. Also, high-res images can be displayed by pointing `data` to flash.
 
