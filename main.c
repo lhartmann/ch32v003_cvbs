@@ -38,8 +38,7 @@ void spi_init( void )
 	SPI1->CTLR1 = 
 		SPI_NSS_Soft | SPI_CPHA_1Edge | SPI_CPOL_Low | SPI_DataSize_8b |
 		SPI_Mode_Master | SPI_Direction_1Line_Tx |
-		SPI_BaudRatePrescaler_4;
-//		SPI_BaudRatePrescaler_8;
+		SPI_BaudRatePrescaler_8;
 
 	// enable SPI port
 	SPI1->CTLR1 |= SPI_CTLR1_SPE;
@@ -102,7 +101,7 @@ void on_scanline(cvbs_context_t *ctx, cvbs_scanline_t *scanline) {
 		img[32] = 0;
 
 		const cvbs_pulse_properties_t *pp = ctx->pulse_properties;
-		scanline->horizontal_start = (int)(5.7e-6*24e6) + pp->sync_normal;
+		scanline->horizontal_start = (int)(5.7e-6*48e6) + pp->sync_normal;
 		scanline->data_length = 33;
 		scanline->data = img;
 	}
@@ -216,48 +215,6 @@ void dma_init() {
 		DMA_CFGR1_EN;
 }
 
-void switch_to_hse_pll() {
-	RCC->CTLR  =
-		(0<<25) | // PLLRDY
-		(1<<24) | // PLLON
-		(0<<19) | // CSSON
-		(0<<18) | // Bypass HSE oscilator, use external clock
-		(0<<17) | // HSE ready
-		(1<<16) | // HSEON
-		(0<< 8) | // HSI Calibration (8bit)
-		(0<< 3) | // HSI Trim (5bit)
-		(0<< 1) | // HSI Ready
-		(1<< 0) ; // HSI On
-	RCC->CFGR0 =
-		(0<<24) | // MCO select: 0..3=OFF, 4=SYSCLK, 5=HSI, 6=HSE, 7=PLL
-		(1<<16) | // PLLSRC: 0=HSI, 1=HSE
-		(0<<11) | // ADC prescale HBCLK by (complicated, 5bit)
-		(0<< 4) | // HBCLK prscale SYSCLK by: 0-7=k+1, 8-15:2**(k-7)
-		(0<< 2) | // SYSCLK status: 0=HSI, 1=HSE, 2=PLL.
-		(0<< 0) ; // SYSCLK Source: 0=HSI, 1=HSE, 2=PLL.
-
-	while (~RCC->CTLR & (1<<25));
-
-	RCC->CFGR0 =
-		(0<<24) | // MCO select: 0..3=OFF, 4=SYSCLK, 5=HSI, 6=HSE, 7=PLL
-		(1<<16) | // PLLSRC: 0=HSI, 1=HSE
-		(0<<11) | // ADC prescale HBCLK by (complicated, 5bit)
-		(0<< 4) | // HBCLK prscale SYSCLK by: 0-7=k+1, 8-15:2**(k-7)
-		(0<< 2) | // SYSCLK status: 0=HSI, 1=HSE, 2=PLL.
-		(1<< 0) ; // SYSCLK Source: 0=HSI, 1=HSE, 2=PLL.
-	RCC->CTLR  =
-		(0<<25) | // PLLRDY
-		(1<<24) | // PLLON
-		(0<<19) | // CSSON
-		(0<<18) | // Bypass HSE oscilator, use external clock
-		(0<<17) | // HSE ready
-		(1<<16) | // HSEON
-		(0<< 8) | // HSI Calibration (8bit)
-		(0<< 3) | // HSI Trim (5bit)
-		(0<< 1) | // HSI Ready
-		(0<< 0) ; // HSI On
-}
-
 /*
  * entry
  */
@@ -266,7 +223,6 @@ int main()
 	memset(VRAM0, 0xE7, sizeof(VRAM0));
 	memset(VRAM1, 0x81, sizeof(VRAM1));
 	SystemInit();
-	switch_to_hse_pll();
 	spi_init();
 	timer_init();
 	dma_init();
