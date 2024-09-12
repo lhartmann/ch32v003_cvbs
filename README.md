@@ -5,6 +5,8 @@ The old-school ZX81 (and the clone by Microdigial, TK85), used a shift register 
 
 See it in action: [Short video on X](https://x.com/lcsvh/status/1805445163596058799/video/1), [A few comments on youtube](https://www.youtube.com/watch?v=9GBjHImoiPg).
 
+![vlcsnap-2024-09-11-23h45m57s923c](https://github.com/user-attachments/assets/9c153eb1-9620-4f3e-b59b-5af53daf31c4)
+
 # Required Hardware
 ```
          390R
