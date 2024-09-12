@@ -7,7 +7,7 @@ typedef struct cvbs_context_s cvbs_context_t;
 typedef struct cvbs_pulse_s cvbs_pulse_t;
 typedef struct cvbs_pulse_properties_s cvbs_pulse_properties_t;
 
-typedef struct cvbs_scanline_e {
+typedef struct cvbs_scanline_s {
     uint16_t horizontal_start;
     uint16_t data_length;
     const uint8_t *data; // Last byte must be zero (HBLANK requirement)
