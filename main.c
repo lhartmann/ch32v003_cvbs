@@ -232,11 +232,17 @@ int main()
 
 	for (int i=32; i<sizeof(VRAM); i++) {
 //		VRAM[i] = i%64 + (i&0x40 ? 0x80 : 0);
-		VRAM[i] = 0x80;
+//		VRAM[i] = i-32;
+		VRAM[i] = ' ';
 	}
 
-	printf("Lucas Vinicius Hartmann \n");
-//	v81_mandelbrot(VRAM);
+	if (1) {
+		const char *name = "Lucas Vinicius Hartmann";
+		int n = strlen(name);
+		memcpy(VRAM+sizeof(VRAM)-n, name, n);
+	}
+
+	v81_mandelbrot(VRAM);
 
 	int i=0;
 	while(1) {

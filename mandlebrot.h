@@ -1,6 +1,16 @@
 #define WIDTH  (32*2)
 #define HEIGHT (24*2)
 
+typedef struct mandelbrot_context_s {
+	// Where on screen is (0,0).
+	// Counted in low-res pixels from top left.
+	// Each VRAM character symbol is 2x2.
+	int x0, y0;
+
+	// Zoom control, distance between pixels
+	double dx, dy;
+} mandelbrot_context_t;
+
 int is_mandlebrot(double re, double im) {
 	double tr = 0;
 	double ti = 0;
@@ -21,30 +31,21 @@ int is_mandlebrot(double re, double im) {
 	return tr*tr + ti*ti < 1;
 }
 
-// int Mandlebrot_Pixel(int x, int y) {
-// 	x -= WIDTH/2;
-// 	y -= HEIGHT/2;
-//
-// 	double cr = (double)x/WIDTH*2.5 - 0.33333;
-// 	double ci = (double)y/WIDTH*2.5;
-// 	return is_mandlebrot(cr,ci);
-// }
-
-int mandlebrot_pixel(int x, int y, double x0, double x1, double y0, double y1) {
-	double cr = x * (x1-x0) / WIDTH  + x0;
-	double ci = y * (y1-y0) / HEIGHT + y0;
+int mandlebrot_pixel(int x, int y, const mandelbrot_context_t *ctx) {
+	double cr = (x - ctx->x0) * ctx->dx;
+	double ci = (y - ctx->y0) * ctx->dy;
 	return is_mandlebrot(cr,ci);
 }
 
-void v81_mandelbrot_screen(uint8_t *vram, double x0, double x1, double y0, double y1) {
+void v81_mandelbrot_screen(uint8_t *vram, const mandelbrot_context_t *ctx) {
 	for (int y=0; y<HEIGHT; y+=2) {
 		for (int x=0; x<WIDTH; x+=2) {
 			*(volatile uint8_t *)&vram[y/2*32 + x/2] = 0x1f;
 
-			int tl = mandlebrot_pixel(x+0, y+0, x0, x1, y0, y1);
-			int tr = mandlebrot_pixel(x+1, y+0, x0, x1, y0, y1);
-			int bl = mandlebrot_pixel(x+0, y+1, x0, x1, y0, y1);
-			int br = mandlebrot_pixel(x+1, y+1, x0, x1, y0, y1);
+			int tl = mandlebrot_pixel(x+0, y+0, ctx);
+			int tr = mandlebrot_pixel(x+1, y+0, ctx);
+			int bl = mandlebrot_pixel(x+0, y+1, ctx);
+			int br = mandlebrot_pixel(x+1, y+1, ctx);
 
 			vram[y/2*32 + x/2] = (tl + tr*2 + bl*4) ^ (br ? 128^7 : 0);
 		}
@@ -52,30 +53,11 @@ void v81_mandelbrot_screen(uint8_t *vram, double x0, double x1, double y0, doubl
 }
 
 void v81_mandelbrot(uint8_t *vram) {
-	// double X0 = 0.750222;
-	// double X1 = 0.749191;
-	// double Y0 = 0.031161;
-	// double Y1 = 0.031752;
+	mandelbrot_context_t ctx = {
+		48, 24,
+		1./32, 1./32
+	};
 
-	double Xc = -1.4142;
-	double Yc =  0;
-	double dx = 0.5/WIDTH;
-	double dy = 0.5/WIDTH;
-
-	// My original coordinates
-	// double X0=-1.583;
-	// double X1=+0.917;
-	// double Y0=-937./1000;
-	// double Y1=+937./1000;
-
-	while(1) {
-		double x0 = Xc - 32*dx;
-		double x1 = Xc + 31*dx;
-		double y0 = Yc - 24*dy;
-		double y1 = Yc + 23*dy;
-		v81_mandelbrot_screen(vram, x0, x1, y0, y1);
-
-		dx *= 0.707;
-		dy *= 0.707;
-	}
+	v81_mandelbrot_screen(vram, &ctx);
 }
+
