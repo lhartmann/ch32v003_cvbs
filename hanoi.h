@@ -34,8 +34,13 @@ unsigned hanoi_widest_piece(hanoi_context_t *ctx, int pin) {
 
 unsigned hanoi_tower_width(hanoi_context_t *ctx, int pin) {
     unsigned W = hanoi_widest_piece(ctx,pin);
+
+    if (ctx->holding_over == pin && W < ctx->holding)
+        W = ctx->holding;
+
     if (W < HANOI_PIECES-1)
         W = HANOI_PIECES-1;
+
     return 2*W+1;
 }
 
@@ -206,6 +211,7 @@ void hanoi_randomize(hanoi_context_t *ctx) {
 void hanoi_main(uint8_t *VRAM) {
     hanoi_context_t ctx;
 
+    // Test the worst case for dynamic width
     hanoi_clean(&ctx);
     for (int i=0; i<HANOI_PIECES; ++i) {
         int pin = i%3;
@@ -216,6 +222,7 @@ void hanoi_main(uint8_t *VRAM) {
     hanoi_print(&ctx);
     Delay_Ms(5000);
 
+    // Test random states
     for (int i=0; i<60; i++) {
         hanoi_randomize(&ctx);
         hanoi_print(&ctx);
