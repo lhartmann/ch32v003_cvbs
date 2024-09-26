@@ -6,6 +6,7 @@
 #define HANOI_ROWS (HANOI_PIECES+1)
 #define HANOI_TOWER_WIDTH 10
 #define HANOI_TOWER_GAP 1
+#define HANOI_SOLVER_DELAY 1
 
 void hanoi_putc(char ch, unsigned n) {
     if (n > 1024)
@@ -159,6 +160,12 @@ void hanoi_print(hanoi_context_t *ctx) {
     hanoi_print_hand_row(ctx);
     hanoi_putc('\n',1);
     hanoi_print_pins(ctx);
+
+    printf("\n\n");
+    printf("towers of hanoi on ch32v003,\n");
+    printf("zx80 fonts and cvbs pal output.\n\n");
+    printf("github.com/lhartmann\n");
+    printf("          /ch32v003_cvbs\n");
 }
 
 bool hanoi_place_at(hanoi_context_t *ctx, unsigned pin, unsigned piece) {
@@ -250,22 +257,22 @@ void hanoi_solver_move(hanoi_context_t *ctx, unsigned from, unsigned to, unsigne
     ctx->holding_over = from;
 
     hanoi_print(ctx);
-    Delay_Ms(100);
+    Delay_Ms(HANOI_SOLVER_DELAY);
 
     hanoi_take(ctx);
 
     hanoi_print(ctx);
-    Delay_Ms(100);
+    Delay_Ms(HANOI_SOLVER_DELAY);
 
     ctx->holding_over = to;
 
     hanoi_print(ctx);
-    Delay_Ms(100);
+    Delay_Ms(HANOI_SOLVER_DELAY);
 
     hanoi_place(ctx);
 
     hanoi_print(ctx);
-    Delay_Ms(100);
+    Delay_Ms(HANOI_SOLVER_DELAY);
 
     hanoi_solver_move(ctx, tmp, to, n-1);
 }
