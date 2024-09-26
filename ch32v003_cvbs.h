@@ -2,6 +2,7 @@
 #ifndef CH32V003_CVBS_H
 #define CH32V003_CVBS_H
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct cvbs_context_s cvbs_context_t;
 typedef struct cvbs_pulse_s cvbs_pulse_t;
@@ -36,7 +37,7 @@ struct cvbs_context_s {
     int line;
 
     const cvbs_pulse_properties_t *pulse_properties;
-    void (*on_vblank)(cvbs_context_t *ctx, int line);
+    void (*on_vblank)(cvbs_context_t *ctx);
     void (*on_scanline)(cvbs_context_t *ctx, cvbs_scanline_t *scanline);
 };
 
@@ -66,11 +67,12 @@ static inline uint16_t cvbs_sync(cvbs_context_t *ctx) {
 }
 
 static inline void cvbs_step(cvbs_context_t *ctx) {
-    if (cvbs_is_active_line(ctx))
-        ctx->line++;
+    ctx->line++;
 
     if (--ctx->pulse_counter)
         return;
+
+    bool was_active = cvbs_is_active_line(ctx);
 
     ctx->current_pulse = ctx->pulse_properties->pulse_sequence[++ctx->pulse_index];
 
@@ -81,10 +83,10 @@ static inline void cvbs_step(cvbs_context_t *ctx) {
 
     ctx->pulse_counter = ctx->current_pulse.duration;
 
-    if (cvbs_is_active_line(ctx))
+    bool is_active = cvbs_is_active_line(ctx);
+
+    if (was_active != is_active)
         ctx->line = 0;
-    else
-        ctx->line = -1;
 }
 
 #endif // CH32V003_CVBS_H

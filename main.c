@@ -10,6 +10,15 @@
 #include "mandlebrot.h"
 #include "ch32v003_cvbs.h"
 
+volatile unsigned frame = 0;
+void on_vblank(cvbs_context_t *ctx) {
+	if (!ctx->line) frame++;
+}
+void wait_for_vsync() {
+	unsigned was = frame;
+	while (was == frame);
+}
+
 cvbs_context_t cvbs_context;
 const uint8_t *active_font = zx81_ascii_font;
 
@@ -138,8 +147,13 @@ void TIM1_UP_IRQHandler() {
 
 	// Think about the next line
 	cvbs_step(&cvbs_context);
-	if (cvbs_is_active_line(ctx) && ctx->on_scanline)
-		ctx->on_scanline(ctx, &scanline);
+	if (cvbs_is_active_line(ctx)) {
+		if (ctx->on_scanline)
+			ctx->on_scanline(ctx, &scanline);
+	} else {
+		if (ctx->on_vblank)
+			ctx->on_vblank(ctx);
+	}
 
 	// Prepare next sync pulse, and horizontal_start
 	TIM1->ATRLR = cvbs_horizontal_period(&cvbs_context);
@@ -229,6 +243,7 @@ int main()
 
 	cvbs_context_init(&cvbs_context, CVBS_STD_ZX81_PAL);
 	cvbs_context.on_scanline = on_scanline;
+	cvbs_context.on_vblank = on_vblank;
 
 	for (int i=32; i<sizeof(VRAM); i++) {
 //		VRAM[i] = i%64 + (i&0x40 ? 0x80 : 0);
