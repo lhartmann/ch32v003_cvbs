@@ -19,6 +19,8 @@ void wait_for_vsync() {
 	while (was == frame);
 }
 
+#include "hanoi.h"
+
 cvbs_context_t cvbs_context;
 const uint8_t *active_font = zx81_ascii_font;
 
@@ -250,6 +252,8 @@ int main()
 //		VRAM[i] = i-32;
 		VRAM[i] = ' ';
 	}
+
+	hanoi_main(VRAM);
 
 	if (1) {
 		const char *name = "Lucas Vinicius Hartmann";
