@@ -63,9 +63,30 @@ static const cvbs_pulse_properties_t ZX81_PAL_pulse_properties = {
     }
 };
 
+// Based on the urls, based on 240p NES, then centered.
+// https://www.batsocks.co.uk/readme/video_timing.htm
+// https://www.nesdev.org/wiki/NTSC_video
+static const cvbs_pulse_properties_t ZX81_NTSC_pulse_properties = {
+    .horizontal_period = 48e6 * 63.55e-6 + 0.5,
+    .sync_short        = 48e6 * 4.7e-6/2 + 0.5,
+    .sync_normal       = 48e6 * 4.7e-6 + 0.5,
+    .sync_long         = 48e6 * (64e-6 - 4.7e-6),
+
+    // 262 lines = 640 pulses = 30 halfs + 610 periods
+    .pulse_sequence = {
+    //   H  S  L  A    N
+        {0, 0, 0, 0,  48}, // Pre-render blanking
+        {0, 0, 0, 1, 192}, // 192 active lines centered over 240p.
+        {0, 0, 0, 0,  19}, // Post-render blanking
+        {0, 0, 1, 0,   3}, // Vsync
+        {0, 0, 0, 0,   0}, // END
+    }
+};
+
 static const cvbs_pulse_properties_t *cvbs_pulse_properties[] = {
     [CVBS_STD_PAL] = &PAL_pulse_properties,
     [CVBS_STD_ZX81_PAL] = &ZX81_PAL_pulse_properties,
+    [CVBS_STD_ZX81_NTSC] = &ZX81_NTSC_pulse_properties,
 };
 
 void cvbs_context_init(cvbs_context_t *ctx, cvbs_standard_t cvbs_standard) {

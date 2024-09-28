@@ -44,6 +44,7 @@ struct cvbs_context_s {
 typedef enum cvbs_standard_e {
     CVBS_STD_PAL,
     CVBS_STD_ZX81_PAL,
+    CVBS_STD_ZX81_NTSC,
 } cvbs_standard_t;
 
 void cvbs_context_init(cvbs_context_t *ctx, cvbs_standard_t cvbs_standard);

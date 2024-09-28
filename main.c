@@ -243,7 +243,7 @@ int main()
 	timer_init();
 	dma_init();
 
-	cvbs_context_init(&cvbs_context, CVBS_STD_ZX81_PAL);
+	cvbs_context_init(&cvbs_context, CVBS_STD_ZX81_NTSC);
 	cvbs_context.on_scanline = on_scanline;
 	cvbs_context.on_vblank = on_vblank;
 
@@ -255,6 +255,7 @@ int main()
 
 	hanoi_main(VRAM);
 
+//	memset(VRAM, 0x1F, sizeof(VRAM));
 	if (1) {
 		const char *name = "Lucas Vinicius Hartmann";
 		int n = strlen(name);
