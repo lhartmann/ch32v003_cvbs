@@ -70,7 +70,7 @@ static const cvbs_pulse_properties_t ZX81_NTSC_pulse_properties = {
     .horizontal_period = 48e6 * 63.55e-6 + 0.5,
     .sync_short        = 48e6 * 4.7e-6/2 + 0.5,
     .sync_normal       = 48e6 * 4.7e-6 + 0.5,
-    .sync_long         = 48e6 * (64e-6 - 4.7e-6),
+    .sync_long         = 48e6 * (63.55e-6 - 4.7e-6) + 0.5,
 
     // 262 lines = 640 pulses = 30 halfs + 610 periods
     .pulse_sequence = {
