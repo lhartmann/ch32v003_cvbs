@@ -1,5 +1,5 @@
 # ch32v003_cvbs
-Proof of concept CVBS / TV Out / PAL video output for CH32V003 microcontroller.
+Proof of concept CVBS / TV Out for CH32V003 microcontroller, supporting PAL and NTSC modes.
 
 The old-school ZX81 (and the clone by Microdigial, TK85), used a shift register for TV out, with a bit of logic for sync. SPI is a shift register, so I found it can be used for this purpose.
 
