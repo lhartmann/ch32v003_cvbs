@@ -28,6 +28,8 @@ uint8_t VRAM0[36];
 uint8_t VRAM1[36];
 uint8_t VRAM[32*24];
 
+#include "uart_dma.h"
+
 /*
  * initialize SPI and DMA
  */
@@ -253,6 +255,7 @@ int main()
 		VRAM[i] = ' ';
 	}
 
+//	uart_vram_demo();
 	hanoi_main(VRAM);
 
 //	memset(VRAM, 0x1F, sizeof(VRAM));
