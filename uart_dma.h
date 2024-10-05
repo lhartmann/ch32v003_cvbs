@@ -23,8 +23,8 @@ void uart_dma_rx_start(
 	size_t rxlen
 ) {
 	// Uses DMA1 Channel 5
-	DMA1_Channel5->PADDR = &USART1->DATAR;
-	DMA1_Channel5->MADDR = rxbuff;
+	DMA1_Channel5->PADDR = (uint32_t)&USART1->DATAR;
+	DMA1_Channel5->MADDR = (uint32_t)rxbuff;
 	DMA1_Channel5->CNTR  = rxlen;
 	DMA1_Channel5->CFGR  =
 		DMA_M2M_Disable |
