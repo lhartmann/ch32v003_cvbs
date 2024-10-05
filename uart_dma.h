@@ -1,4 +1,5 @@
 #include "ch32v003fun.h"
+#include "ch32v003_cvbs_text_32x24.h"
 
 void uart_init(
 	uint32_t baud
@@ -45,12 +46,12 @@ void uart_dma_rx_wait() {
 	DMA1->INTFCR = DMA1_IT_TC5;
 }
 
-void uart_vram_demo() {
+void uart_vram_demo(cvbs_text_32x24_context_t *cvbs_text) {
 	uart_init(921600);
 	while(true) {
-		wait_for_vsync();
+		wait_for_vsync(cvbs_text);
 		USART1->DATAR = '.';
-		uart_dma_rx_start(VRAM, sizeof(VRAM));
+		uart_dma_rx_start(cvbs_text->VRAM, sizeof(cvbs_text->VRAM));
 //		uart_dma_rx_wait();
 	}
 }

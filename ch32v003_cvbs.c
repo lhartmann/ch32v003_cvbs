@@ -2,6 +2,11 @@
 #include "ch32v003fun.h"
 #include <string.h>
 
+static cvbs_context_t *cvbs_context;
+cvbs_context_t *cvbs_get_active_context() {
+	return cvbs_context;
+}
+
 // Hardware requirements:
 //   HCLK must be 48MHz.
 //   Timer1 runs at HCLK, 48MHz;
@@ -120,7 +125,6 @@ static void spi_init( void )
 // Timer Init
 int32_t TIM1_UP_IRQHandler_active_duration;
 int32_t TIM1_UP_IRQHandler_blank_duration;
-static cvbs_context_t *cvbs_context;
 void TIM1_UP_IRQHandler( void ) __attribute__((interrupt));
 void TIM1_UP_IRQHandler() {
 	// Profiling interrupt duration

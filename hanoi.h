@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include "ch32v003_cvbs_text_32x24.h"
 
 #define HANOI_PIECES 9
 #define HANOI_ROWS (HANOI_PIECES+1)
@@ -25,6 +26,8 @@ uint32_t rand() {
 }
 
 typedef struct hanoi_context_s {
+    cvbs_text_32x24_context_t *cvbs_text;
+
     uint8_t towers[3][HANOI_ROWS];
     uint8_t holding, holding_over;
 } hanoi_context_t;
@@ -155,7 +158,7 @@ void hanoi_print_pins(hanoi_context_t *ctx) {
 }
 
 void hanoi_print(hanoi_context_t *ctx) {
-    wait_for_vsync();
+    wait_for_vsync(ctx->cvbs_text);
     hanoi_putc('\f',1);
     hanoi_print_hand_row(ctx);
     hanoi_putc('\n',1);
@@ -163,7 +166,7 @@ void hanoi_print(hanoi_context_t *ctx) {
 
     printf("\n\n");
     printf("towers of hanoi on ch32v003,\n");
-    printf("zx80 fonts and cvbs pal output.\n\n");
+    printf("zx80 fonts and cvbs ntsc output.\n\n");
     printf("github.com/lhartmann\n");
     printf("          /ch32v003_cvbs\n");
 }
@@ -285,8 +288,9 @@ void hanoi_solver(hanoi_context_t *ctx) {
     Delay_Ms(1000);
 }
 
-void hanoi_main(uint8_t *VRAM) {
+void hanoi_main(cvbs_text_32x24_context_t *cvbs_text) {
     hanoi_context_t ctx;
+    ctx.cvbs_text = cvbs_text;
 
     hanoi_solver(&ctx);
     return;

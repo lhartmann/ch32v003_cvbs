@@ -49,6 +49,7 @@ typedef enum cvbs_standard_e {
 
 void cvbs_context_init(cvbs_context_t *ctx, cvbs_standard_t cvbs_standard);
 void cvbs_init(cvbs_context_t *ctx);
+cvbs_context_t *cvbs_get_active_context();
 
 static inline int cvbs_is_active_line(cvbs_context_t *ctx) {
     return ctx->current_pulse.active;

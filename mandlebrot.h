@@ -1,3 +1,5 @@
+#include "ch32v003_cvbs_text_32x24.h"
+
 #define WIDTH  (32*2)
 #define HEIGHT (24*2)
 
@@ -9,6 +11,8 @@ typedef struct mandelbrot_context_s {
 
 	// Zoom control, distance between pixels
 	double dx, dy;
+
+	cvbs_text_32x24_context_t *cvbs_text;
 } mandelbrot_context_t;
 
 int is_mandlebrot(double re, double im) {
@@ -37,27 +41,29 @@ int mandlebrot_pixel(int x, int y, const mandelbrot_context_t *ctx) {
 	return is_mandlebrot(cr,ci);
 }
 
-void v81_mandelbrot_screen(uint8_t *vram, const mandelbrot_context_t *ctx) {
+void v81_mandelbrot_screen(const mandelbrot_context_t *ctx) {
 	for (int y=0; y<HEIGHT; y+=2) {
 		for (int x=0; x<WIDTH; x+=2) {
-			*(volatile uint8_t *)&vram[y/2*32 + x/2] = 0x1f;
+			volatile uint8_t *vram = &ctx->cvbs_text->VRAM[y/2*32 + x/2];
+			*vram = 0x1f;
 
 			int tl = mandlebrot_pixel(x+0, y+0, ctx);
 			int tr = mandlebrot_pixel(x+1, y+0, ctx);
 			int bl = mandlebrot_pixel(x+0, y+1, ctx);
 			int br = mandlebrot_pixel(x+1, y+1, ctx);
 
-			vram[y/2*32 + x/2] = (tl + tr*2 + bl*4) ^ (br ? 128^7 : 0);
+			*vram = (tl + tr*2 + bl*4) ^ (br ? 128^7 : 0);
 		}
 	}
 }
 
-void v81_mandelbrot(uint8_t *vram) {
+void v81_mandelbrot(cvbs_text_32x24_context_t *cvbs_text) {
 	mandelbrot_context_t ctx = {
 		48, 24,
-		1./32, 1./32
+		1./32, 1./32,
+		cvbs_text
 	};
 
-	v81_mandelbrot_screen(vram, &ctx);
+	v81_mandelbrot_screen(&ctx);
 }
 
