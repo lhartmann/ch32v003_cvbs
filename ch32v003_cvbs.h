@@ -48,6 +48,7 @@ typedef enum cvbs_standard_e {
 } cvbs_standard_t;
 
 void cvbs_context_init(cvbs_context_t *ctx, cvbs_standard_t cvbs_standard);
+void cvbs_init(cvbs_context_t *ctx);
 
 static inline int cvbs_is_active_line(cvbs_context_t *ctx) {
     return ctx->current_pulse.active;
@@ -89,5 +90,8 @@ static inline void cvbs_step(cvbs_context_t *ctx) {
     if (was_active != is_active)
         ctx->line = 0;
 }
+
+extern int32_t TIM1_UP_IRQHandler_active_duration;
+extern int32_t TIM1_UP_IRQHandler_blank_duration;
 
 #endif // CH32V003_CVBS_H
