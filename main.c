@@ -20,7 +20,6 @@ static void graphics_demos() {
 	cvbs_graphics_128x96_context_t cvbs_gfx;
 	cvbs_graphics_128x96_context_init(&cvbs_gfx);
 	cvbs_init(&cvbs_gfx.cvbs);
-	printf("GFX init ok.\n");
 
 	v81_mandelbrot_128x96(&cvbs_gfx);
 	gfx_demo_noise(&cvbs_gfx);

@@ -30,5 +30,8 @@ void v81_mandelbrot_128x96(cvbs_graphics_128x96_context_t *gfx) {
 			}
 		}
 	}
+
+	for (int i=0; i<60*5; i++)
+		cvbs_graphics_128x96_wait_for_vsync(gfx);
 }
 
