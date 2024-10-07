@@ -12,6 +12,11 @@ typedef struct cvbs_scanline_s {
     uint16_t horizontal_start;
     uint16_t data_length;
     const uint8_t *data; // Last byte must be zero (HBLANK requirement)
+    struct {
+        // Default is 6MHz
+        unsigned pixel_clock_12M : 1;
+        unsigned pixel_clock_3M  : 1;
+    } flags;
 } cvbs_scanline_t;
 
 typedef struct cvbs_pulse_s {
