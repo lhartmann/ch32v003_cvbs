@@ -13,10 +13,10 @@ typedef struct cvbs_text_32x24_context_s {
     uint8_t VRAM[32*24];
 } cvbs_text_32x24_context_t;
 
-static inline void wait_for_vsync(cvbs_text_32x24_context_t *ctx) {
+static inline void cvbs_text_32x24_wait_for_vsync(cvbs_text_32x24_context_t *ctx) {
     volatile uint32_t *is = &ctx->frame_counter;
 	unsigned was = *is;
 	while (was == *is);
 }
 
-void cvbs_text_32x24_context_init(cvbs_text_32x24_context_t *cvbs_text, cvbs_standard_t cvbs_standard);
+void cvbs_text_32x24_context_init(cvbs_text_32x24_context_t *cvbs_text);
