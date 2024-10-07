@@ -264,4 +264,6 @@ void cvbs_finish(cvbs_context_t *ctx) {
 
 	// Reset Timer1 and SPI
 	RCC->APB2PRSTR |= RCC_TIM1RST | RCC_SPI1RST;
+
+	cvbs_context = 0;
 }
