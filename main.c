@@ -9,19 +9,27 @@
 #include "fonts/zx81_ascii.h"
 #include "mandlebrot.h"
 #include "ch32v003_cvbs.h"
+#include "ch32v003_cvbs_text_32x24.h"
+#include "ch32v003_cvbs_graphics_128x96.h"
 #include "hanoi.h"
 #include "uart_dma.h"
+#include "gfx_demo_noise.h"
 
-static cvbs_text_32x24_context_t cvbs_text;
+static void graphics_demos() {
+	cvbs_graphics_128x96_context_t cvbs_gfx;
+	cvbs_graphics_128x96_context_init(&cvbs_gfx);
+	cvbs_init(&cvbs_gfx.cvbs);
+	printf("GFX init ok.\n");
 
-/*
- * entry
- */
-int main()
-{
-	SystemInit();
+	gfx_demo_noise(&cvbs_gfx);
 
-	cvbs_text_32x24_context_init(&cvbs_text, CVBS_STD_ZX81_NTSC);
+	cvbs_finish(&cvbs_gfx.cvbs);
+}
+
+static void text_demos() {
+	cvbs_text_32x24_context_t cvbs_text;
+
+	cvbs_text_32x24_context_init(&cvbs_text);
 	cvbs_text.active_font = zx81_ascii_font;
 	cvbs_init(&cvbs_text.cvbs);
 
@@ -30,8 +38,7 @@ int main()
 
 	v81_mandelbrot(&cvbs_text);
 
-	int i=0;
-	while(1) {
+	for (int i=0; i<60; i++) {
 		Delay_Ms( 1000 );
 		printf("%d, AD=%ld, BD=%ld, T=%d.\n",
 			i++,
@@ -39,5 +46,16 @@ int main()
 			TIM1_UP_IRQHandler_blank_duration,
 			cvbs_horizontal_period(&cvbs_text.cvbs)
 		);
+	}
+
+	cvbs_finish(&cvbs_text.cvbs);
+}
+
+int main() {
+	SystemInit();
+
+	while (true) {
+		graphics_demos();
+		text_demos();
 	}
 }
