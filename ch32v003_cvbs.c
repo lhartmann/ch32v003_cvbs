@@ -252,3 +252,15 @@ void cvbs_init(cvbs_context_t *ctx) {
     timer_init();
     dma_init();
 }
+
+void cvbs_finish(cvbs_context_t *ctx) {
+	// Disable timer interrupts
+	NVIC_DisableIRQ( TIM1_UP_IRQn );
+
+	// Disable DMA
+	DMA1_Channel3->CFGR = 0;
+	DMA1_Channel6->CFGR = 0;
+
+	// Reset Timer1 and SPI
+	RCC->APB2PRSTR |= RCC_TIM1RST | RCC_SPI1RST;
+}
