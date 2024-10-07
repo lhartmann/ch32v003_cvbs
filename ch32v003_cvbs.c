@@ -147,11 +147,11 @@ void TIM1_UP_IRQHandler() {
 		TIM1->DMAINTENR |= TIM_CC3DE;
 
 		if (scanline.flags.pixel_clock_3M)
-			SPI1->CTLR1 = (SPI1->CTLR1 & ~SPI_BaudRatePrescaler_256) | SPI_BaudRatePrescaler_16;
+			SPI1->CTLR1 = (SPI1->CTLR1 & ~SPI_CTLR1_BR) | SPI_BaudRatePrescaler_16;
 		else if (scanline.flags.pixel_clock_12M)
-			SPI1->CTLR1 = (SPI1->CTLR1 & ~SPI_BaudRatePrescaler_256) | SPI_BaudRatePrescaler_4;
+			SPI1->CTLR1 = (SPI1->CTLR1 & ~SPI_CTLR1_BR) | SPI_BaudRatePrescaler_4;
 		else // pixel clock 6M
-			SPI1->CTLR1 = (SPI1->CTLR1 & ~SPI_BaudRatePrescaler_256) | SPI_BaudRatePrescaler_8;
+			SPI1->CTLR1 = (SPI1->CTLR1 & ~SPI_CTLR1_BR) | SPI_BaudRatePrescaler_8;
 	} else {
 		// Stop DMA trigger
 		TIM1->DMAINTENR &= ~TIM_CC3DE;
