@@ -63,6 +63,7 @@ static void on_scanline(cvbs_context_t *cvbs, cvbs_scanline_t *scanline) {
 	img[32] = 0;
 
 	const cvbs_pulse_properties_t *pp = cvbs->pulse_properties;
+	memset(scanline, 0, sizeof(*scanline));
 	scanline->horizontal_start = (int)(5.7e-6*48e6) + pp->sync_normal;
 	scanline->data_length = 33;
 	scanline->data = img;

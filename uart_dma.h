@@ -49,7 +49,7 @@ void uart_dma_rx_wait() {
 void uart_vram_demo(cvbs_text_32x24_context_t *cvbs_text) {
 	uart_init(921600);
 	while(true) {
-		wait_for_vsync(cvbs_text);
+		cvbs_text_32x24_wait_for_vsync(cvbs_text);
 		USART1->DATAR = '.';
 		uart_dma_rx_start(cvbs_text->VRAM, sizeof(cvbs_text->VRAM));
 //		uart_dma_rx_wait();

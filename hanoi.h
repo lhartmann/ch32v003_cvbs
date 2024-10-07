@@ -158,7 +158,7 @@ void hanoi_print_pins(hanoi_context_t *ctx) {
 }
 
 void hanoi_print(hanoi_context_t *ctx) {
-    wait_for_vsync(ctx->cvbs_text);
+    cvbs_text_32x24_wait_for_vsync(ctx->cvbs_text);
     hanoi_putc('\f',1);
     hanoi_print_hand_row(ctx);
     hanoi_putc('\n',1);
