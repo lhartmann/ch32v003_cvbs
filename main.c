@@ -14,6 +14,7 @@
 #include "hanoi.h"
 #include "uart_dma.h"
 #include "gfx_demo_noise.h"
+#include "gfx_demo_mandelbrot.h"
 
 static void graphics_demos() {
 	cvbs_graphics_128x96_context_t cvbs_gfx;
@@ -21,6 +22,7 @@ static void graphics_demos() {
 	cvbs_init(&cvbs_gfx.cvbs);
 	printf("GFX init ok.\n");
 
+	v81_mandelbrot_128x96(&cvbs_gfx);
 	gfx_demo_noise(&cvbs_gfx);
 
 	cvbs_finish(&cvbs_gfx.cvbs);

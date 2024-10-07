@@ -1,8 +1,5 @@
 #include "ch32v003_cvbs_text_32x24.h"
 
-#define WIDTH  (32*2)
-#define HEIGHT (24*2)
-
 typedef struct mandelbrot_context_s {
 	// Where on screen is (0,0).
 	// Counted in low-res pixels from top left.
@@ -42,6 +39,8 @@ int mandlebrot_pixel(int x, int y, const mandelbrot_context_t *ctx) {
 }
 
 void v81_mandelbrot_screen(const mandelbrot_context_t *ctx) {
+	const unsigned HEIGHT = 96;
+	const unsigned WIDTH = 128;
 	for (int y=0; y<HEIGHT; y+=2) {
 		for (int x=0; x<WIDTH; x+=2) {
 			volatile uint8_t *vram = &ctx->cvbs_text->VRAM[y/2*32 + x/2];
