@@ -5,3 +5,4 @@
 *.lst
 *.hex
 *.xz
+**/*.kate-swp
