@@ -39,10 +39,10 @@ static void text_demos() {
 
 	v81_mandelbrot(&cvbs_text);
 
-	for (int i=0; i<60; i++) {
+	for (int i=0; i<30; i++) {
 		Delay_Ms( 1000 );
 		printf("%d, AD=%ld, BD=%ld, T=%d.\n",
-			i++,
+			i,
 			TIM1_UP_IRQHandler_active_duration,
 			TIM1_UP_IRQHandler_blank_duration,
 			cvbs_horizontal_period(&cvbs_text.cvbs)
@@ -56,7 +56,7 @@ int main() {
 	SystemInit();
 
 	while (true) {
-		graphics_demos();
 		text_demos();
+		graphics_demos();
 	}
 }

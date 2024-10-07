@@ -19,7 +19,6 @@ void v81_mandelbrot_128x96(cvbs_graphics_128x96_context_t *gfx) {
 	for (int y=0; y<HEIGHT; y++) {
 		for (int x=0; x<WIDTH; x+=8) {
 			volatile uint8_t *vram = &gfx->VRAM[y*16 + x/8];
-			*vram = 0;
 
 			for (int dx=0; dx<8; dx++) {
 				int m = 0x80 >> dx;
