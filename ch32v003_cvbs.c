@@ -248,6 +248,7 @@ void cvbs_context_init(cvbs_context_t *ctx, cvbs_standard_t cvbs_standard) {
 
 void cvbs_init(cvbs_context_t *ctx) {
     cvbs_context = ctx;
+	RCC->APB2PRSTR &= ~(RCC_TIM1RST | RCC_SPI1RST);
     spi_init();
     timer_init();
     dma_init();
