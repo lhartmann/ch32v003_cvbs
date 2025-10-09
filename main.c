@@ -9,6 +9,7 @@
 #include "fonts/zx81_ascii.h"
 #include "mandlebrot.h"
 #include "ch32v003_cvbs.h"
+#include "cvbs_ntsc_zx81.h"
 #include "ch32v003_cvbs_text_32x24.h"
 #include "ch32v003_cvbs_graphics_128x96.h"
 #include "hanoi.h"
@@ -19,6 +20,7 @@
 static void graphics_demos() {
 	cvbs_graphics_128x96_context_t cvbs_gfx;
 	cvbs_graphics_128x96_context_init(&cvbs_gfx);
+	cvbs_gfx.cvbs.pulse_properties = &cvbs_NTSC_ZX81;
 	cvbs_init(&cvbs_gfx.cvbs);
 
 	v81_mandelbrot_128x96(&cvbs_gfx);
@@ -31,6 +33,7 @@ static void text_demos() {
 	cvbs_text_32x24_context_t cvbs_text;
 
 	cvbs_text_32x24_context_init(&cvbs_text);
+	cvbs_text.cvbs.pulse_properties = &cvbs_NTSC_ZX81;
 	cvbs_text.active_font = zx81_ascii_font;
 	cvbs_init(&cvbs_text.cvbs);
 

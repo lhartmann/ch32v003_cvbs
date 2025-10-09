@@ -27,7 +27,7 @@ static void on_scanline(cvbs_context_t *cvbs, cvbs_scanline_t *scanline) {
 
 void cvbs_graphics_128x96_context_init(cvbs_graphics_128x96_context_t *cvbs_gfx) {
 	memset(cvbs_gfx, 0, sizeof(*cvbs_gfx));
-	cvbs_context_init(&cvbs_gfx->cvbs, CVBS_STD_ZX81_NTSC);
+	cvbs_context_init(&cvbs_gfx->cvbs);
 	cvbs_gfx->cvbs.on_scanline = on_scanline;
 	cvbs_gfx->cvbs.on_vblank = on_vblank;
 }

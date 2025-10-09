@@ -46,13 +46,7 @@ struct cvbs_context_s {
     void (*on_scanline)(cvbs_context_t *ctx, cvbs_scanline_t *scanline);
 };
 
-typedef enum cvbs_standard_e {
-    CVBS_STD_PAL,
-    CVBS_STD_ZX81_PAL,
-    CVBS_STD_ZX81_NTSC,
-} cvbs_standard_t;
-
-void cvbs_context_init(cvbs_context_t *ctx, cvbs_standard_t cvbs_standard);
+void cvbs_context_init(cvbs_context_t *ctx);
 void cvbs_init(cvbs_context_t *ctx);
 void cvbs_finish(cvbs_context_t *ctx);
 cvbs_context_t *cvbs_get_active_context();

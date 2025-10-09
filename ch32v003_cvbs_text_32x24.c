@@ -116,7 +116,7 @@ int _write(int fd, const char *buf, int size) {
 
 void cvbs_text_32x24_context_init(cvbs_text_32x24_context_t *cvbs_text) {
 	memset(cvbs_text, 0, sizeof(*cvbs_text));
-	cvbs_context_init(&cvbs_text->cvbs, CVBS_STD_ZX81_NTSC);
+	cvbs_context_init(&cvbs_text->cvbs);
 	cvbs_text->cvbs.on_scanline = on_scanline;
 	cvbs_text->cvbs.on_vblank = on_vblank;
 }
