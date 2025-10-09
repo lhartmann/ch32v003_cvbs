@@ -3,7 +3,7 @@
  * 2024-07-17 Lucas V. Hartmann
  */
 
-#include "ch32v003fun.h"
+#include "ch32fun.h"
 #include <stdio.h>
 #include <string.h>
 #include "fonts/zx81_ascii.h"

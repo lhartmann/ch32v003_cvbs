@@ -1,5 +1,5 @@
 #include "ch32v003_cvbs.h"
-#include "ch32v003fun.h"
+#include "ch32fun.h"
 #include <string.h>
 
 static cvbs_context_t *cvbs_context;
